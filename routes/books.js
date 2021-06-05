@@ -3,7 +3,10 @@ const router = express.Router();
 const Book = require('../schemas/bookSchema');
 
 router.get('/', (req, res) => {
-    res.send('We are in the books homepage.');
+    Book.findOne({'author': 'Kirk Duchesne'}), (err, book) => {
+        if (err) {console.log(err)};
+        res.status(200).json(book);
+    }
 });
 
 router.get('/:id', (req, res) => {
@@ -12,13 +15,16 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/newbook', (req, res) => {
-    const newBook = new Book({
-        title: req.params.title,
-        author: req.params.author,
-    });
-    newBook.save()
-    .then(() => console.log('Success!'))
-    .catch(err => console.log('Oops', err));
+        let comments = req.params.comments;
+        const newBook = new Book({
+            title: req.body.title,
+            author: req.body.author,
+            comments: comments,
+        });
+        newBook.save()
+        .then(() => console.log('Success!'))
+        .then(() => res.status(200).json({'author': req.body.author}))
+        .catch(err => console.log('Oops', err));
 });
 
 module.exports = router;
